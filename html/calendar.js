@@ -230,7 +230,7 @@ const controls = {
 		for (var i=firstYear;i<=this.year+10;i++) {
 			var frag = document.createElement('option');
 			frag.setAttribute('value',i);
-			frag.innerHTML = i + '”N';
+			frag.innerHTML = i + 'å¹´';
 			if (i === this.year) {frag.setAttribute('selected','');}
 			this.yearSel.appendChild(frag);
 		}
@@ -240,7 +240,7 @@ const controls = {
 		for (var i=1;i<=12;i++) {
 			var frag = document.createElement('option');
 			frag.setAttribute('value',i);
-			frag.innerHTML = i + 'ŒŽ';
+			frag.innerHTML = i + 'æœˆ';
 			if (i === this.month) frag.setAttribute('selected','');
 			this.monthSel.appendChild(frag);
 		}
@@ -254,7 +254,7 @@ const controls = {
 		for (var i=1;i<=numDays;i++) {
 			const frag = document.createElement('option');
 			frag.setAttribute('value', i);
-			frag.innerHTML = i + '“ú';
+			frag.innerHTML = i + 'æ—¥';
 			if (i == this.day) frag.setAttribute('selected','');
 			this.daySel.appendChild(frag);
 		}
