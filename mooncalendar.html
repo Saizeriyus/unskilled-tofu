@@ -2,7 +2,7 @@
 <html>
    <head>
       <base target="_top">
-		<title>�y�G�I���[�A�z���̏o�J�����_�[�yFFXIV�z</title>
+		<title>【エオルゼア】月の出カレンダー【FFXIV】</title>
 		<link rel="stylesheet" type="text/css" href="./html/calendar.css">
 		<link rel="stylesheet" type="text/css" href="./html/extra.css">
 		<script type='text/javascript' src='./html/weatherChances.js'></script>
@@ -34,12 +34,12 @@
 											const temp = document.querySelector('#entryGridTemplate').content;
 											this.node = document.importNode(temp,true);
 											
-											/* dateEl = ���t�i�n�����ԁj*/
+											/* dateEl = 日付（地球時間）*/
 											this.dateEl.classList.add('wdDate');
 											this.dateEl.innerHTML = this.localDate.toDateString();
 											/*frag.appendChild(this.dateEl);
 
-											/* zoneEl = �w��G���A */
+											/* zoneEl = 指定エリア */
 											this.zoneEl.innerHTML = translateZones['jp'][this.zone];
 											/*frag.appendChild(this.zoneEl);
 		  									
@@ -47,14 +47,14 @@
 											this.timeIconEl = this.node.querySelector('.wdTimeIcon');
 											this.timeIconEl.innerHTML = 'ET';
 
-											/* timeLabelEl = �J�n�G�I���� */
+											/* timeLabelEl = 開始エオ時間 */
 											this.timeLabelEl = this.node.querySelector('.wdTimeLabel');
 											this.timeLabelEl.setAttribute('data-time','ET');
 											let eotime = clocks.timeET(this.start).hour;
 											eotime = eotime<10? '0'+eotime : eotime;
 											this.timeLabelEl.innerHTML = `${eotime}`;
 
-											/* weatherIconEl = �V�� */
+											/* weatherIconEl = 天候 */
 											this.weatherIconEl = this.node.querySelector('.wdWeatherIcon');
 											this.weatherImg = this.weatherIconEl.querySelector('img');
 											this.weatherImg.setAttribute('style',`object-position: calc(-${this.weather.imgIndex} * var(--weather-icon-height)) 50%;`);
@@ -64,7 +64,7 @@
 											this.weatherLabelEl = this.node.querySelector('.wdWeatherLabel');
 											this.weatherLabelEl.innerHTML = this.weather.local['jp'];
 
-											/* countDownEl = �c�莞�ԁi�G�I���ԁj*/
+											/* countDownEl = 残り時間（エオ時間）*/
 											const currentTime = new Date().getTime();
 											this.countDownEl = this.node.querySelector('.wdCountDown');
 											let restTime = parseInt((currentTime - this.start)/1000);
@@ -148,7 +148,7 @@
 							this.zone = zone || this.zone;
 							const stackEl = stackElement || this.stackEl;
 							const titleEl = document.createElement('div');
-							titleEl.innerHTML = `${translateZones['jp'][this.zone]}�̓V�C�F`;
+							titleEl.innerHTML = `${translateZones['jp'][this.zone]}の天気：`;
 							const now = new Date();
 							const ut = now.getTime();
 							const stack = [];
@@ -180,23 +180,23 @@
 </head>
 	<body style="justify-content:center">
 		<div id="wrap">
-			<h1>�y�G�I���[�A�z���̏o�J�����_�[�yFFXIV�z</h1>
+			<h1>【エオルゼア】月の出カレンダー【FFXIV】</h1>
 			<div id="container">
 				<div id="explanation" class="decoBox">
-					<h4>����ɂ���</h4>
+					<h4>こんにちは</h4>
 					<div class="hug">
 						<!-- explaning stuff -->
 						<p>
-						�V�̊ϑ��̂��߂ɍ������J�����_�[�ł��B</p><p>
-						�������₷���V���̓����𒲂ׂ��茎�����ϑ����邽�߂Ɏg���܂��B
-						�J�����_�[�ɕ\�L����Ă��鎞�Ԃ͒n�����Ԃł��B�G�I���[�A���̌��̏o���ԁi<span class="wdTimeIcon">ET</span>18:00�j���w���Ă��܂��B
+						天体観測のために作った趣味カレンダーです。</p><p>
+						星が見やすい新月の日時を調べたり月相を観測するために使います。
+						カレンダーに表記されている時間は地球時間です。エオルゼア内の月の出時間（<span class="wdTimeIcon">ET</span>18:00）を指しています。
 						</p><p>
-						���̐ݒ��������ƕ\������V�C�̃G���A��N����ς����܂��B���ɂ��̐ݒ�͓��ɉ������܂���B�����͖������ł��B
+						下の設定をいじると表示する天気のエリアや年月を変えられます。日にちの設定は特に何もしません。時差は未実装です。
 						</p>
 					</div>
 				</div>
 				<div id="controls" class="decoBox">
-					<h4>�ݒ�</h4>
+					<h4>設定</h4>
 					<div class="hug">
 						<select id="changeZone" name="changeZone">
 							<!-- JS options -->
@@ -209,22 +209,22 @@
 							<!-- JS options -->
 						</select>
 						<select id="changeDay" >
-							<option value="default">-��<option>
+							<option value="default">-日<option>
 						</select>
 							<select id="changeTimezone" disabled>
-								<option value="default" selected>���{����</option>
+								<option value="default" selected>日本時間</option>
 							</select>
 					</div>
 				</div>
 				<div id="subInfo" class="decoBox">
 					<!-- useful things to know -->
 					<div class="decoBox">
-						���ݓ����F<span id="dateLT"></span><br>
-						���ݎ��ԁF<span id="clockLT"></span>
+						現在日時：<span id="dateLT"></span><br>
+						現在時間：<span id="clockLT"></span>
 					</div>
 					<div class="decoBox 3items">
-						<span>����F<span id="dateET"></span></span><br>
-						<span>�G�I���ԁF<span id="clockET"></span></span>
+						<span>月齢：<span id="dateET"></span></span><br>
+						<span>エオ時間：<span id="clockET"></span></span>
 					</div>
 					<div id="weatherStack" class="decoBox">
 						<div class="decoBox">Placeholder</div>
@@ -235,13 +235,13 @@
          <table id="calendarTable" class="calendar default nogrid">
             <thead>
                <tr>
-                  <th class="weekday" style="background-color:#fcc; color:#f00;">��</th>
-                  <th class="weekday">��</th>
-                  <th class="weekday">��</th>
-                  <th class="weekday">��</th>
-                  <th class="weekday">��</th>
-                  <th class="weekday">��</th>
-                  <th class="weekday" style="background-color:#9fc5e8; color:#00f;">�y</th>
+                  <th class="weekday" style="background-color:#fcc; color:#f00;">日</th>
+                  <th class="weekday">月</th>
+                  <th class="weekday">火</th>
+                  <th class="weekday">水</th>
+                  <th class="weekday">木</th>
+                  <th class="weekday">金</th>
+                  <th class="weekday" style="background-color:#9fc5e8; color:#00f;">土</th>
                </tr>
             </thead>
             <tbody>
@@ -266,7 +266,7 @@
 			<div class="weatherIcon">
 				<img class="weatherIcon" src="./img/weatherIconsImp.gif" />
 			</div>
-			<span>��</span>
+			<span>→</span>
 			<div class="weatherIcon">
 				<img class="weatherIcon" src="./img/weatherIconsImp.gif" />
 			</div>
