@@ -1,0 +1,10 @@
+div.hug {
+	margin: 2%;
+}
+
+footer {
+	width: 100%;
+	height: 8em;
+	background-color: var(--bgcolor-medium);
+	margin-top: 4em;
+}

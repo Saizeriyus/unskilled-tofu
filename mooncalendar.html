@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <base target="_top">
+		<title>【エオルゼア】月の出カレンダー【FFXIV】</title>
+		<link rel="stylesheet" type="text/css" href="./html/calendar.css">
+		<link rel="stylesheet" type="text/css" href="./html/extra.css">
+		<script type='text/javascript' src='./html/weatherChances.js'></script>
+		<script type='text/javascript' src='./html/weathers.js'></script>
+		<script type='text/javascript' src='./html/zones.js'></script>
+		<script type='text/javascript' src='./html/clocks.js'></script>
+		<script type='text/javascript'>
+
+			function Weather(zone, ut) {
+								this.weather = weathers[weatherChance[zone](getChance(ut))];
+								this.zone = zone;
+								this.start = ut - ut%1400000;
+							   this.end = ut - ut%1400000 + 1400000;
+						}
+			function WeatherData(zone, ut) {
+							Weather.call(this, zone, ut)
+							this.ut = ut;
+							this.localDate = new Date(this.start);
+							this.dateEl = document.createElement('div');
+							this.zoneEl = document.createElement('div');
+/*							this.timeIconEl = document.createElement('div');
+							this.timeLabelEl = document.createElement('div');
+							this.weatherIconEl = document.createElement('div');
+							this.weatherImg = document.createElement('img');
+							this.weatherLabelEl = document.createElement('div');
+							this.countDownEl = document.createElement('div');
+*/
+							this.createEntry = function() {
+											const temp = document.querySelector('#entryGridTemplate').content;
+											this.node = document.importNode(temp,true);
+											
+											/* dateEl = 日付（地球時間）*/
+											this.dateEl.classList.add('wdDate');
+											this.dateEl.innerHTML = this.localDate.toDateString();
+											/*frag.appendChild(this.dateEl);
+
+											/* zoneEl = 指定エリア */
+											this.zoneEl.innerHTML = translateZones['jp'][this.zone];
+											/*frag.appendChild(this.zoneEl);
+		  									
+		  									/* timeIconEl */
+											this.timeIconEl = this.node.querySelector('.wdTimeIcon');
+											this.timeIconEl.innerHTML = 'ET';
+
+											/* timeLabelEl = 開始エオ時間 */
+											this.timeLabelEl = this.node.querySelector('.wdTimeLabel');
+											this.timeLabelEl.setAttribute('data-time','ET');
+											let eotime = clocks.timeET(this.start).hour;
+											eotime = eotime<10? '0'+eotime : eotime;
+											this.timeLabelEl.innerHTML = `${eotime}`;
+
+											/* weatherIconEl = 天候 */
+											this.weatherIconEl = this.node.querySelector('.wdWeatherIcon');
+											this.weatherImg = this.weatherIconEl.querySelector('img');
+											this.weatherImg.setAttribute('style',`object-position: calc(-${this.weather.imgIndex} * var(--weather-icon-height)) 50%;`);
+											this.weatherImg.setAttribute('alt',this.weather.local['jp']);
+											
+											/* weatherLabelEl */
+											this.weatherLabelEl = this.node.querySelector('.wdWeatherLabel');
+											this.weatherLabelEl.innerHTML = this.weather.local['jp'];
+
+											/* countDownEl = 残り時間（エオ時間）*/
+											const currentTime = new Date().getTime();
+											this.countDownEl = this.node.querySelector('.wdCountDown');
+											let restTime = parseInt((currentTime - this.start)/1000);
+		  									const restSign = (restTime<0 ? '-' : '+');
+											restTime = Math.abs(restTime);
+											const restHour = parseInt(restTime/3600);
+											const restMin = parseInt((restTime%3600)/60);
+											const restSec = (restTime%60);
+											clocks.formatClock(this.countDownEl, restHour, restMin, restSec); 
+											this.countDownEl.innerHTML = restSign + this.countDownEl.innerHTML;
+											
+											/* atbFill */
+											this.atbFillEl = this.node.querySelector('.atbFill');
+											this.refreshATB();
+
+											return this.node;
+										}
+							this.remainingTime = function(tm) {
+											const currentTime = tm || new Date().getTime();
+											if (currentTime >= this.end) {
+															const nextTime = this.stack[this.stack.length - 1].end;
+															const nextWeather = new WeatherData(this.zone, nextTime);
+															const nextEntry = nextWeather.createEntry();
+															this.stack.push(nextWeather);
+															this.stackEl.appendChild(nextEntry);
+															nextWeather.node = this.stackEl.lastElementChild;
+															this.stack.shift();
+															this.node.remove();
+															this.stackEl.normalize();
+															console.log(weatherEntryStack);
+															this.refreshStack();
+															return;
+														}
+											let restTime = currentTime>=this.start?
+												parseInt((this.end - currentTime)/1000) : 
+												parseInt((this.start - currentTime)/1000);
+											const restSign = (currentTime<this.start? '-' : '');
+											let restDay = parseInt(restTime/79200);
+											let restHour = parseInt((restTime%79200)/3600);
+											let restMin = parseInt((restTime%3600)/60);
+											let restSec = restTime%60;
+											let fixDig = (n) => n<10? `0${n}` : n;
+											let cdString = `${fixDig(restMin)}m&nbsp;${fixDig(restSec)}s`;
+											if (restDay != 0) {
+												cdString = `${fixDig(restDay)}d&nbsp;${fixDig(restHour)}h&nbsp;${cdString}`;
+											}else if (restHour != 0) {
+												cdString = `${fixDig(restHour)}h&nbsp;${cdString}`;
+											}
+											this.countDownEl.innerHTML = cdString;
+											this.countDownEl.innerHTML = restSign + this.countDownEl.innerHTML;
+										}
+							this.refreshATB = function(tm) {
+											if (!this.atbFillEl) {
+															console.log("atbFill not found");
+															return;
+														}
+											const currentTime = tm || new Date().getTime();
+											const newEl = this.atbFillEl.cloneNode(true);
+											if (currentTime>=this.start) {
+												const restTime = parseInt((this.start - currentTime)/1000);
+												newEl.style = 
+																`animation: ${(this.end - this.start)/1000}s linear ${restTime}s running both emptyatb`;
+												console.log("animation style: empty");
+												} else {
+												const restTime = parseInt((this.start - currentTime)/1000);
+												newEl.style = `animation: 3600s linear ${restTime - 3600}s running both fillatb`; 
+												}
+											this.atbFillEl.before(newEl);
+											this.atbFillEl.remove();
+											this.atbFillEl = newEl;
+										}
+							this.refreshStack = function() {
+											if (!weatherEntryStack) return;
+											for (var i = 0; i < weatherEntryStack.length; i++) {
+															weatherEntryStack[i].refreshATB();
+														}
+										}
+						}
+
+			function makeWeatherEntryStack(zone, stackElement) {
+							this.zone = zone || this.zone;
+							const stackEl = stackElement || this.stackEl;
+							const titleEl = document.createElement('div');
+							titleEl.innerHTML = `${translateZones['jp'][this.zone]}の天気：`;
+							const now = new Date();
+							const ut = now.getTime();
+							const stack = [];
+							stackEl.innerHTML = '';
+							WeatherData.prototype.stack = stack;
+							WeatherData.prototype.stackEl = stackEl;
+							stackEl.appendChild(titleEl);
+							for (i=0;i<10;i++) {
+											const a = new WeatherData(zone, ut + i * 1400000);
+											let ent = a.createEntry();
+											stack.push(a);
+											stackEl.appendChild(ent);
+											a.node = stackEl.lastElementChild;
+										}
+							console.log(stack);
+							return stack;
+						}
+			let weatherEntryStack = [];
+
+			window.addEventListener('load',clocks,false);
+			window.addEventListener('load',function() {
+				  			const weatherStackEl = 	document.getElementById('weatherStack');
+							weatherEntryStack = makeWeatherEntryStack(controls.zone,weatherStackEl);
+				  		},false);
+			console.log(window.location.href);
+				  
+		</script>
+			<script type='text/javascript' src='./html/calendar.js'></script>
+</head>
+	<body style="justify-content:center">
+		<div id="wrap">
+			<h1>【エオルゼア】月の出カレンダー【FFXIV】</h1>
+			<div id="container">
+				<div id="explanation" class="decoBox">
+					<h4>こんにちは</h4>
+					<div class="hug">
+						<!-- explaning stuff -->
+						<p>
+						天体観測のために作った趣味カレンダーです。</p><p>
+						星が見やすい新月の日時を調べたり月相を観測するために使います。
+						カレンダーに表記されている時間は地球時間です。エオルゼア内の月の出時間（<span class="wdTimeIcon">ET</span>18:00）を指しています。
+						</p><p>
+						下の設定をいじると表示する天気のエリアや年月を変えられます。日にちの設定は特に何もしません。時差は未実装です。
+						</p>
+					</div>
+				</div>
+				<div id="controls" class="decoBox">
+					<h4>設定</h4>
+					<div class="hug">
+						<select id="changeZone" name="changeZone">
+							<!-- JS options -->
+						</select>
+						<br>
+						<select id="changeYear">
+							<!-- JS options -->
+						</select>
+						<select id="changeMonth">
+							<!-- JS options -->
+						</select>
+						<select id="changeDay" >
+							<option value="default">-日<option>
+						</select>
+							<select id="changeTimezone" disabled>
+								<option value="default" selected>日本時間</option>
+							</select>
+					</div>
+				</div>
+				<div id="subInfo" class="decoBox">
+					<!-- useful things to know -->
+					<div class="decoBox">
+						現在日時：<span id="dateLT"></span><br>
+						現在時間：<span id="clockLT"></span>
+					</div>
+					<div class="decoBox 3items">
+						<span>月齢：<span id="dateET"></span></span><br>
+						<span>エオ時間：<span id="clockET"></span></span>
+					</div>
+					<div id="weatherStack" class="decoBox">
+						<div class="decoBox">Placeholder</div>
+						<div class="decoBox">Placeholder</div>
+						<div class="decoBox">Placeholder</div>
+					</div>
+				</div>
+         <table id="calendarTable" class="calendar default nogrid">
+            <thead>
+               <tr>
+                  <th class="weekday" style="background-color:#fcc; color:#f00;">日</th>
+                  <th class="weekday">月</th>
+                  <th class="weekday">火</th>
+                  <th class="weekday">水</th>
+                  <th class="weekday">木</th>
+                  <th class="weekday">金</th>
+                  <th class="weekday" style="background-color:#9fc5e8; color:#00f;">土</th>
+               </tr>
+            </thead>
+            <tbody>
+					<!-- JS table body -->
+            </tbody>
+         </table>
+			</div> <!-- content -->
+		</div> <!-- wrap -->
+		<footer>
+		</footer>
+   </body>	
+	<template id="dateCardTemp">
+		<div class="screen"></div>
+		<div class="dates"></div>
+		<div class="am"></div>
+		<div class="pm"></div>
+	</template>
+	<template id="moonEntryTemp">
+		<div class="moonImg"><img /></div>
+		<div class="moonTime"></div>
+		<div class="moonWeather">
+			<div class="weatherIcon">
+				<img class="weatherIcon" src="./img/weatherIconsImp.gif" />
+			</div>
+			<span>→</span>
+			<div class="weatherIcon">
+				<img class="weatherIcon" src="./img/weatherIconsImp.gif" />
+			</div>
+		</div>
+	</template>
+	<template id="entryGridTemplate">
+		<div class="decoBox entryGrid">
+			<div class="wdTimeIcon"></div>
+			<div class="wdTimeLabel"></div>
+			<div class="wdWeatherIcon">
+				<img class="weatherIcon" src="./img/weatherIconsImp.gif" />
+			</div>
+			<div class="wdWeatherLabel"></div>
+			<div class="wdCountDown"></div>
+			<div class="wdATB">
+				<div class="atbFill">
+				</div>
+			</div>
+		</div>
+	</template>
+</html>
